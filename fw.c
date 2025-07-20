@@ -6,6 +6,7 @@
 #define INDICATE_N 1
 #define INDICATE_TOPN 2
 #define BASE_TEN 10
+#pragma clang diagnostic ignored "-Wsometimes-uninitialized"
 
 void print_comm_args(char**);
 void print_usage(void);
@@ -17,18 +18,39 @@ int main(int argc, char* argv[]){
   int i;
   long topn;
   char *endptr;
-  if(!strcmp(argv[INDICATE_N], "-n")){
-    topn = strtol(argv[INDICATE_TOPN], &endptr, BASE_TEN);
-    if(endptr == argv[INDICATE_TOPN] || errno == ERANGE ){
-      /* Some problem getting from strtol */
+
+  if(argc > 1){
+    /* meaning that file-name is likely provided. */
+
+    if(!strcmp(argv[INDICATE_N], "-n")){
+      /* meaning that -n is provided  in argv[1] */
+      topn = strtol(argv[INDICATE_TOPN], &endptr, BASE_TEN);
+      if(endptr == argv[INDICATE_TOPN] || errno == ERANGE ){
+        /* Some problem getting from strtol */
+        print_usage();
+      }
+      /* ./fw -n <some_number> is provided */
+      printf("topn is set %ld\n", topn);
+      i = 3;
+    }else{
+      /* -n is not provided so we set n value as 10 */
+      topn = 10;
+      i = 1;
+      printf("topn is set %ld\n", topn);
+    }
+
+    if(!argv[INDICATE_TOPN + 1]){
+      /* -n and number is rightly presented but file name is not present */
+      /* print usage*/
       print_usage();
     }
-    printf("topn is set %ld\n", topn);
-    i = 3;
-  }else{
-    topn = 10;
-    i = 1;
-    printf("topn is set %ld\n", topn);
+
+    for(; argv[i] != NULL; i++){
+
+      if((fp = fopen(argv[i], "r")) == NULL){
+        perror(argv[i]);
+        continue;
+      }
   }
 
   /* 
@@ -37,12 +59,6 @@ int main(int argc, char* argv[]){
    * like **argv
    */
 
-  for(; argv[i] != NULL; i++){
-
-    if((fp = fopen(argv[i], "r")) == NULL){
-      perror(argv[i]);
-      continue;
-    }
     /* Entry point for Reading a word processing */
     /* readword is what ? 
      *  - return value : nothing
@@ -63,7 +79,6 @@ int main(int argc, char* argv[]){
      *
      */
 
-    read_word()
     
     printf("File Opend!\n");
 
