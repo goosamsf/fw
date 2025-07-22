@@ -79,9 +79,8 @@ void ds_print_ht(word_count** arr){
     node = arr[i];
     curr = node;
     if(!node){
-      continue;
+      continue; 
       /* only print none -null */
-      printf("arr[%d] -->  NULL ", i);
     }
 
     ds_print_node(curr);
@@ -93,11 +92,12 @@ void ds_print_node(word_count* node){
   word_count* it;
   it = node;
   while(it){
-    printf("addr : %p: [ %s, %d, %p ] --> ",(void*)it, it->word, it->count,(void*)it->next);
+    printf("addr : %p: [ %s, %d, %p ] ",(void*)it, it->word, it->count,(void*)it->next);
     if(! it->next){
-      printf("\n");
+      printf("-----> NULL\n");
     }
     it = it->next;
+    printf("\n  -->");
   }
 }
 
@@ -117,20 +117,21 @@ int hash(const char *str){
 
 }
 
-word_count * check_existence(const char *str, word_count **ht){
+word_count * check_existence(const char *str, word_count **ht, int *i){
   /* if found return its address
    * otherwise it reuturn NULL;
    */
-  int i;
+  int index;
   word_count *node;
   word_count *curr;
-  i = hash(str);
-  node = ht[i];
+  index = hash(str);
+  *i = index;
+  node = ht[index];
   curr = node;
   while(curr){
     if(!strcmp(curr->word, str)){
       /* found */
-      printf("found in index %d\n",i);
+      printf("found in index %d\n",index);
       return curr;
     }
     curr = curr->next;
@@ -143,10 +144,44 @@ void increment_count(word_count* node){
   node->count++ ;
 }
 
-void node_append(word_count *node_at, const char * word){
+void node_append(word_count **node_at, const char * word){
+  /* node_at will be given as following form :
+   * ht[hash[index]] meaning : append function should check if the room is
+   * taken 
+   */
   word_count *node;
+  word_count *curr = *node_at;
   node = create_node(word);
-  node_at->next = node;
+  if(!(*node_at)){ 
+    *node_at = node;
+    return;
+  }
+  while(curr && curr->next) {
+    curr = curr->next;
+  }
+  curr->next = node;
 }
+
+void node_traversal(word_count* node){
+  word_count* curr = node;
+  while(curr){
+    printf("%s : %d" ,curr->word, curr->count);
+    if(curr->next){
+      printf("\n  --> ");
+    }
+    curr = curr->next;
+  }
+  printf("\n");
+}
+/* Node Append Test cases */
+/*
+ * 1. When appending at the top of the list
+ * 2. When appending at the end of the list
+ * ( There is no case for adding in the middle )
+ * Test function should do :
+ * 1. Read Bunch of words
+ * 2. put it in the hash table (most likely at the top of the list )
+ *
+ */
 
 

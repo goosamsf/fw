@@ -3,6 +3,10 @@
 #include<string.h>
 #include<errno.h>
 #include<stdlib.h>
+
+#include"fw_ds.h"
+#include"fw_read.h"
+
 #define INDICATE_N 1
 #define INDICATE_TOPN 2
 #define BASE_TEN 10
@@ -10,14 +14,18 @@
 
 void print_comm_args(char**);
 void print_usage(void);
+void process(word_count ** , char* );
 
 int main(int argc, char* argv[]){
 
 
-  FILE *fp;
+  FILE *fp =NULL;
   int i;
+  int k;
   long topn;
   char *endptr;
+  char *word;
+  word_count **ht;
 
   if(argc > 1){
     /* meaning that file-name is likely provided. */
@@ -39,10 +47,20 @@ int main(int argc, char* argv[]){
       printf("topn is set %ld\n", topn);
     }
 
+    /* Initialize hash table for the word */
+    ht = ds_init();
+    ds_print_ht(ht);
+
     if(!argv[INDICATE_TOPN + 1]){
       /* -n and number is rightly presented but file name is not present */
-      /* print usage*/
-      print_usage();
+      /* set fp to stdin */
+      fp = stdin;
+
+      while(!feof(fp)) {
+        word = read_word(fp);
+        puts(word);
+         
+      }
     }
 
     for(; argv[i] != NULL; i++){
@@ -51,61 +69,57 @@ int main(int argc, char* argv[]){
         perror(argv[i]);
         continue;
       }
-  }
-
-  /* 
-   * How to pass char * argv[] to a function call?
-   * and how is different from passing some pointer related arguments?
-   * like **argv
-   */
-
-    /* Entry point for Reading a word processing */
-    /* readword is what ? 
-     *  - return value : nothing
-     *  - arguments : take a FILE pointer
-     *  - Does what 
-     *    - process from the FILE pointer and read word and store it into a
-     *    data structure
-     *  - Order 
-     *    getchar to read character ->
-     *    if encounter something that's not a character
-     *      that is a word and takes that word and put it into a data
-     *      structure. do until EOF
-     *
-     *    if EOF is encountered, get out of the word processing and go to
-     *    the next file. 
-     *
-     *
-     *
-     */
-
-    
+      printf("Processing file name : %s\n", argv[i]);
+      while(!feof(fp)){
+        word = read_word(fp);
+        if(word){
+          printf("Beginning word : %s : ",word);
+          process(ht,word);
+        }
+      }
+    }
     printf("File Opend!\n");
-
     /* FILE CLOSE */
     fclose(fp);
     printf("And Closed !\n");
+  } /* braces for checking the number of arguments is greater than 1. */ 
+
+  for(k = 0; k< HASH_SIZE; k++){
+    if(ht[k]){
+      node_traversal(ht[k]);
+    }
   }
 
 
-  /* print_comm_args(argv); */
-
-
-  /*
-   *  Order of this project 
-   *  - Pare the command line argument 
-   *    - What argument can be made?
-   *      - 1. nothing -- > generate error message
-   *      - 2. 1 word --> open that file 
-   *                          process that file
-   *                          or
-   *                          Generate Error message
-   *
-   *      - 3. 
-   *
-   */
-
   return 0;
+
+}/* braces that main function end */
+
+
+void process(word_count **ht, char* word){
+  int i;
+  word_count* p;
+/* what should process(ht) does
+ * check if word exist
+ * if exist ? -- > increment
+ * if doesnt't exist? --> create a node and add to ht
+ */
+/*  
+word_count* create_node(const char * );
+word_count * check_existence(const char *str, word_count **ht);
+int hash(const char *);
+void increment_count(word_count*);
+void node_append(word_count *, const char *);
+*/
+  if((p=check_existence(word, ht, &i)) != NULL){
+    /* if word found , */
+    increment_count(p);
+
+  }else {
+    /* if word not found */
+    node_append(&ht[i],word);
+  }
+
 
 }
 
