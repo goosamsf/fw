@@ -31,7 +31,7 @@ void print_fw_vector(word_count* v, int l){
   printf("Traverse done.\n");
 }
 
-void mig2_fw_vector(word_count**ht, word_count **v, int l){
+void mig2_fw_vector(word_count**ht, word_count **v, int* l){
   /* Hash Table's contents will be migrated into the 'v', which is
    * dynamically allocated contiguous data structure so that it can be
    * sorted easily.
@@ -50,7 +50,7 @@ void mig2_fw_vector(word_count**ht, word_count **v, int l){
         if(vindex != 1 && vindex % (DEFAULT_V_SIZE-1) == 0){
           /* Realloc */
           v_size += DEFAULT_V_SIZE;
-          if((newloc = realloc(*v, sizeof(word_count)* v_size)) == NULL){
+          if((newloc = realloc(newloc, sizeof(word_count)* v_size)) == NULL){
             perror("REALLOC_MIG2");
             exit(-1);
           }
@@ -62,4 +62,5 @@ void mig2_fw_vector(word_count**ht, word_count **v, int l){
   }
   /* Update the address of dynamic array */
   *v = newloc;
+  *l = vindex;
 }

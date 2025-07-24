@@ -17,6 +17,7 @@
 void print_comm_args(char**);
 void print_usage(void);
 void process(word_count ** , char* );
+int cmp_int(const void*, const void *);
 
 int main(int argc, char* argv[]){
 
@@ -109,7 +110,8 @@ int main(int argc, char* argv[]){
   
    fwvec = fw_vector_init(); 
    newloc = &fwvec; 
-   mig2_fw_vector(ht,newloc,vec_size);
+   mig2_fw_vector(ht,newloc,&vec_size);
+   qsort(*newloc, vec_size, sizeof(word_count), cmp_int);
    printf("Done upto here \n");
    print_fw_vector(*newloc, vec_size); 
 
@@ -158,4 +160,13 @@ void print_comm_args(char *t[]){
   }
 }
 
+int cmp_int(const void* a, const void* b){
+  const word_count* p1 = (const word_count*) a;
+  const word_count* p2 = (const word_count*) b;
+
+  if(p1->count != p2->count){
+    return p2->count - p1->count;
+  }
+  return strcmp(p1->word, p2->word);
+}
 
