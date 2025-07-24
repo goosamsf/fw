@@ -25,6 +25,7 @@ int hash(const char *);
 void increment_count(word_count*);
 void node_append(word_count **, const char *);
 void node_traversal(word_count*);
+void node_destructor(word_count**);
 
 
 

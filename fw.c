@@ -59,7 +59,6 @@ int main(int argc, char* argv[]){
       while(!feof(fp)) {
         word = read_word(fp);
         puts(word);
-         
       }
     }
 
@@ -89,7 +88,14 @@ int main(int argc, char* argv[]){
       node_traversal(ht[k]);
     }
   }
+  
+  node_destructor(ht);
 
+  for(k = 0; k< HASH_SIZE; k++){
+    if(ht[k]){
+      node_traversal(ht[k]);
+    }
+  }
 
   return 0;
 
@@ -97,20 +103,13 @@ int main(int argc, char* argv[]){
 
 
 void process(word_count **ht, char* word){
+  /* what process(ht) does :
+   * check if word exist
+   *   if EXIST? -- > Increment the counter in the node
+   *   if NOT? --> Create a node and append it at the end of chaining hash table
+   */
   int i;
   word_count* p;
-/* what should process(ht) does
- * check if word exist
- * if exist ? -- > increment
- * if doesnt't exist? --> create a node and add to ht
- */
-/*  
-word_count* create_node(const char * );
-word_count * check_existence(const char *str, word_count **ht);
-int hash(const char *);
-void increment_count(word_count*);
-void node_append(word_count *, const char *);
-*/
   if((p=check_existence(word, ht, &i)) != NULL){
     /* if word found , */
     increment_count(p);
@@ -119,25 +118,26 @@ void node_append(word_count *, const char *);
     /* if word not found */
     node_append(&ht[i],word);
   }
-
-
 }
 
 void print_usage(void){
+  /* This function handles giving usage message whenever user input is not
+   * valid. 
+   */
   fprintf(stderr, "fw [-n num] [ file1 [ file 2 ... ] ]\n");
   exit(-1);
 }
 
 
 void print_comm_args(char *t[]){
-  int i;
   /* 
-   * How to iterate over string array in C ?
+   * For DEBUG purpose :
+   *  - How to iterate over string array in C ?
    */
+  int i;
   for(i = 1; t[i] != NULL; i++){
     printf("%s ", t[i]);
   }
-
 }
 
 

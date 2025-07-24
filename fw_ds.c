@@ -1,28 +1,9 @@
 #include "fw_ds.h"
 
-/*
-typedef struct {
-  int count; 
-  char * word;
-  struct word_count *next;
-  
-} word_count;
-*/
-
-
-/* ds_init() 
- *
- * what does it do? 
- *  args : void
- *  ret val : pointer to begining of the array
- *  create an array of pointer to "word_count" and null-processing
- *
- *
- * */
 
 word_count** ds_init(void) {
-  /* dynamically allocate the array 
-   * size , 
+  /* 
+   * This function initializes the HASH TABLE(array of word_count* )
    */
   int i;
   word_count** ret;
@@ -39,11 +20,11 @@ word_count** ds_init(void) {
 word_count* create_node(const char * word ){
   /* 
    * What it does:
-   * 1. allocate dynamiccally created node
-   * 2. initialize the count value as 1
-   * 3. initialize the word value as "word" in word
-   * 4. initialize the next value as null
-   * 4. return pointer to that dynamically allocated part
+   *  - allocate dynamiccally created node
+   *  - initialize the count value as 1
+   *  - initialize the word value as "word" in word
+   *  - initialize the next value as null
+   *  - return the address of the node that has been just created. 
    */
   int len;
   word_count *ret;
@@ -58,9 +39,7 @@ word_count* create_node(const char * word ){
     perror("strdup");
     exit(-1);
   }
-
   ret->next = NULL;
-
   return ret; 
 }
 
@@ -70,21 +49,13 @@ void ds_print_ht(word_count** arr){
   word_count *node;
   word_count *curr;
   for(i = 0; i < HASH_SIZE; i++){
-  /*    
-    if(i == 30){
-      break;
-    }
-
- */   
     node = arr[i];
     curr = node;
     if(!node){
+      /* only print if non-null */
       continue; 
-      /* only print none -null */
     }
-
     ds_print_node(curr);
-
   }
 }
 
@@ -118,8 +89,13 @@ int hash(const char *str){
 }
 
 word_count * check_existence(const char *str, word_count **ht, int *i){
-  /* if found return its address
-   * otherwise it reuturn NULL;
+  /* WHAT it DOES:
+   *  - Compute hash with 'str' --> int
+   *  - Update i ; i is ptr to integer that's defined upper stack. 
+   *    (we update i so that when str is not found, else statement can use
+   *    i value to access right bucket.)
+   *    - IF found, return the address of the node.
+   *    -       Or, return NULL
    */
   int index;
   word_count *node;
@@ -141,6 +117,7 @@ word_count * check_existence(const char *str, word_count **ht, int *i){
 }
 
 void increment_count(word_count* node){
+  /* Access the node with the given address and increment the counter */
   node->count++ ;
 }
 
@@ -163,6 +140,7 @@ void node_append(word_count **node_at, const char * word){
 }
 
 void node_traversal(word_count* node){
+  /* For Debugging Purpose */
   word_count* curr = node;
   while(curr){
     printf("%s : %d" ,curr->word, curr->count);
@@ -173,15 +151,30 @@ void node_traversal(word_count* node){
   }
   printf("\n");
 }
-/* Node Append Test cases */
-/*
- * 1. When appending at the top of the list
- * 2. When appending at the end of the list
- * ( There is no case for adding in the middle )
- * Test function should do :
- * 1. Read Bunch of words
- * 2. put it in the hash table (most likely at the top of the list )
- *
- */
+
+void node_destructor(word_count** ht){
+  /* This function will be executed at the end of main so that we properly
+   * handles and follow good practice for memory usage 
+   * Basically, for all bucket in the hash map traverse every single node
+   * including the one lineked together due to avoidence of collison(if any)
+   * Free every single dynamically allocated memory.
+   * Notice the strdup should be taken care too.
+   */
+  
+  int i;
+  word_count* curr;
+  word_count* prev;
+  for(i = 0; i< HASH_SIZE; i++){
+    curr = ht[i];
+    prev = NULL;
+    while(curr){
+      prev = curr;
+      curr = curr->next;
+      free(prev->word);
+      free(prev);
+    }
+    ht[i] = NULL;
+  }
+}
 
 
