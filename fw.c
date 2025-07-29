@@ -11,8 +11,10 @@
 #define INDICATE_N 1
 #define INDICATE_TOPN 2
 #define BASE_TEN 10
-#pragma clang diagnostic ignored "-Wsometimes-uninitialized"
-#pragma clang diagnostic ignored "-Wempty-translation-unit"
+/*
+#pragma GCC diagnostic ignored "-Wsometimes-uninitialized"
+#pragma GCC diagnostic ignored "-Wempty-translation-unit"
+*/
 
 void print_comm_args(char**);
 void print_usage(void);
@@ -23,19 +25,60 @@ int main(int argc, char* argv[]){
 
   FILE *fp =NULL;
   int i;
+  char *slash_n = argv[1];
   long topn;
+  
   char *endptr;
   char *word;
   int vec_size = DEFAULT_V_SIZE;
   word_count **ht;
   word_count** newloc;
   word_count* fwvec;
+  unsigned char slash_n_flag = 0;
+  unsigned char top_n_flag = 0;
 
-  /* VECTOR Feature */
-/*   word_count* fwvec = fw_vector_init(); */
-/*   newloc = &fwvec; */
-/*   /mig2_fw_vector(ht,) */
-/*   print_fw_vector(fwvec, vec_size); */
+  if(argv[INDICATE_N] && !strcmp(slash_n, "-n")){
+    slash_n_flag = 1;
+  }
+  if(argv[INDICATE_TOPN]){
+    /* if third argument is not null */
+    topn = strtol(argv[INDICATE_TOPN], &endptr, BASE_TEN);
+    if(endptr == argv[INDICATE_TOPN] || errno == ERANGE){
+      print_usage();
+    }
+    top_n_flag = 1;
+  }
+  /*
+   * TODO : 7/29/25/ 23:50
+   *  Stopped after trying to parse the command line argument.
+   *  still have to figure out how to gracefully handle all the unordinary cases
+   *  - topn is set to 0 if strtol convertion string is "ish10"
+   *  - we also want to make sure "10-ish" is not allowed.
+   *  - after that we set the right fileptr and topn , see below if elif and
+   *  else.
+   */
+
+  if(slash_n_flag && top_n_flag){
+    /* case 1 
+     * topn is set
+     * check file name is given and if given fptr = open
+     *                              if not-given fptr = stdin*/
+    printf("Both slash n and top n provided :\n");
+  }else if(!slash_n_flag && !top_n_flag){
+    /*
+     * topn is set to 10
+     * check if file name is given and if given fptr = open()
+     *                                    not-given fptr = stdin
+     */
+    printf("Neither slash n and top n both provided :\n");
+  }else{
+    /* print usage() */
+    printf("only_one provided\n");
+  }
+
+  /* curretly program should end here */
+  return 0;
+
 
   if(argc > 1){
 

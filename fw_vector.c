@@ -1,4 +1,3 @@
-#pragma clang diagnostic ignored "-Wempty-translation-unit"
 
 
 #include "fw_ds.h"

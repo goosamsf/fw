@@ -1,5 +1,5 @@
 #include "fw_ds.h"
-
+char *strndup(const char *, size_t );
 
 word_count** ds_init(void) {
   /* 
