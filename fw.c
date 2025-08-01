@@ -28,135 +28,86 @@ int main(int argc, char* argv[]){
   char *slash_n = argv[1];
   long topn;
   
-  char *endptr;
+  char *endptr = NULL;
   char *word;
   int vec_size = DEFAULT_V_SIZE;
+
   word_count **ht;
   word_count** newloc;
   word_count* fwvec;
+
+
   unsigned char slash_n_flag = 0;
   unsigned char top_n_flag = 0;
 
+  (void) ht;
+  (void) newloc;
+  (void) fwvec;
+  (void) vec_size;
+  (void) topn;
+
   if(argv[INDICATE_N] && !strcmp(slash_n, "-n")){
     slash_n_flag = 1;
-  }
-  if(argv[INDICATE_TOPN]){
-    /* if third argument is not null */
     topn = strtol(argv[INDICATE_TOPN], &endptr, BASE_TEN);
+    if(endptr && *endptr != '\0'){
+      print_usage();
+    }
     if(endptr == argv[INDICATE_TOPN] || errno == ERANGE){
       print_usage();
     }
     top_n_flag = 1;
+  }else{
+    topn = 10;
   }
-  /*
-   * TODO : 7/29/25/ 23:50
-   *  Stopped after trying to parse the command line argument.
-   *  still have to figure out how to gracefully handle all the unordinary cases
-   *  - topn is set to 0 if strtol convertion string is "ish10"
-   *  - we also want to make sure "10-ish" is not allowed.
-   *  - after that we set the right fileptr and topn , see below if elif and
-   *  else.
-   */
 
   if(slash_n_flag && top_n_flag){
-    /* case 1 
-     * topn is set
-     * check file name is given and if given fptr = open
-     *                              if not-given fptr = stdin*/
-    printf("Both slash n and top n provided :\n");
+    i = 3;
   }else if(!slash_n_flag && !top_n_flag){
-    /*
-     * topn is set to 10
-     * check if file name is given and if given fptr = open()
-     *                                    not-given fptr = stdin
-     */
-    printf("Neither slash n and top n both provided :\n");
+    i = 1;
+    /* printf("Neither slash n and top n both provided :\n"); */
   }else{
-    /* print usage() */
-    printf("only_one provided\n");
+    printf("only_one provided , shouldn't be it, something wrong\n");
+    print_usage();
   }
+  
+  if(!argv[i]){
+    /* fp should be set to stdin */
+    fp = stdin;
+    printf("fp is set to stdin , you will fix this later\n");
+    printf("Terminating this program ...\n");
+    return 0;
+  }
+
+  ht = ds_init();
+  ds_print_ht(ht);
 
   /* curretly program should end here */
-  return 0;
+  for(; argv[i] != NULL; i++){
 
-
-  if(argc > 1){
-
-    /* meaning that file-name is likely provided. */
-
-    if(!strcmp(argv[INDICATE_N], "-n")){
-      /* meaning that -n is provided  in argv[1] */
-      topn = strtol(argv[INDICATE_TOPN], &endptr, BASE_TEN);
-      if(endptr == argv[INDICATE_TOPN] || errno == ERANGE ){
-        /* Some problem getting from strtol */
-        print_usage();
-      }
-      /* ./fw -n <some_number> is provided */
-      printf("topn is set %ld\n", topn);
-      i = 3;
-    }else{
-      /* -n is not provided so we set n value as 10 */
-      topn = 10;
-      i = 1;
-      printf("topn is set %ld\n", topn);
+    if((fp = fopen(argv[i], "r")) == NULL){
+      perror(argv[i]);
+      continue;
     }
-
-    /* Initialize hash table for the word */
-    ht = ds_init();
-    ds_print_ht(ht);
-
-    if(!argv[INDICATE_TOPN + 1]){
-      /* -n and number is rightly presented but file name is not present */
-      /* set fp to stdin */
-      fp = stdin;
-
-      while(!feof(fp)) {
-        word = read_word(fp);
-        puts(word);
+    /*printf("Processing file name : %s\n", argv[i]); */
+    while(!feof(fp)){
+      word = read_word(fp);
+      if(word){
+        /*printf("Beginning word : %s : ",word); */
+        process(ht,word);
       }
-    }
-
-    for(; argv[i] != NULL; i++){
-
-      if((fp = fopen(argv[i], "r")) == NULL){
-        perror(argv[i]);
-        continue;
-      }
-      printf("Processing file name : %s\n", argv[i]);
-      while(!feof(fp)){
-        word = read_word(fp);
-        if(word){
-          printf("Beginning word : %s : ",word);
-          process(ht,word);
-        }
-      }
-    }
-    printf("File Opend!\n");
-    /* FILE CLOSE */
-    fclose(fp);
-    printf("And Closed !\n");
-  } /* braces for checking the number of arguments is greater than 1. */ 
-
-  /*
-  for(k = 0; k< HASH_SIZE; k++){
-    if(ht[k]){
-      node_traversal(ht[k]);
     }
   }
-  node_destructor(ht);
-  for(k = 0; k< HASH_SIZE; k++){
-    if(ht[k]){
-      node_traversal(ht[k]);
-    }
-  }
-  */
-  
-   fwvec = fw_vector_init(); 
-   newloc = &fwvec; 
-   mig2_fw_vector(ht,newloc,&vec_size);
-   qsort(*newloc, vec_size, sizeof(word_count), cmp_int);
-   printf("Done upto here \n");
-   print_fw_vector(*newloc, vec_size); 
+  /*printf("File Opend!\n"); */
+  /* FILE CLOSE */
+  fclose(fp);
+  /*printf("And Closed !\n"); */
+
+  fwvec = fw_vector_init(); 
+  newloc = &fwvec; 
+  mig2_fw_vector(ht,newloc,&vec_size);
+  qsort(*newloc, vec_size, sizeof(word_count), cmp_int);
+  /*printf("Done upto here \n"); */
+  print_fw_vector(*newloc, vec_size, topn); 
 
 
 

@@ -21,13 +21,16 @@ word_count* fw_vector_init(void){
   return ret;
 }
 
-void print_fw_vector(word_count* v, int l){
+void print_fw_vector(word_count* v, int l, int topn){
   /* This Traverse the array and print every single element in the array */
   int i;
-  for(i=0; i<l; i++){
-    printf("%d :[ %s,%d ]\n", i,v[i].word , v[i].count);
+  if(topn > l){
+    topn = l;
   }
-  printf("Traverse done.\n");
+  printf("The top %d words (out of %d) are:\n", topn, l);
+  for(i=0; i<topn; i++){
+    printf("\t%7d %s\n", v[i].count , v[i].word);
+  }
 }
 
 void mig2_fw_vector(word_count**ht, word_count **v, int* l){

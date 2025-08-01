@@ -107,12 +107,12 @@ word_count * check_existence(const char *str, word_count **ht, int *i){
   while(curr){
     if(!strcmp(curr->word, str)){
       /* found */
-      printf("found in index %d\n",index);
+      /*printf("found in index %d\n",index); */
       return curr;
     }
     curr = curr->next;
   }
-  printf("Not Found \n");
+  /*printf("Not Found \n"); */
   return NULL;
 }
 
