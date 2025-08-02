@@ -1,3 +1,5 @@
+## From Calpoly CSC357(Professor Nico)
+
 ### fw(Frequency of Word) 
 fw is a program that can count each word present in a file or a set of files. 
 It counts the word in a file and order them in descenting order by word's
