@@ -3,6 +3,7 @@
 #include<string.h>
 #include<errno.h>
 #include<stdlib.h>
+#include<time.h>
 
 #include"fw_ds.h"
 #include"fw_read.h"
@@ -36,9 +37,11 @@ int main(int argc, char* argv[]){
   word_count** newloc;
   word_count* fwvec;
 
-
   unsigned char slash_n_flag = 0;
   unsigned char top_n_flag = 0;
+  double cpu_time_used;
+  clock_t start,end;
+  start = clock(); 
 
   (void) ht;
   (void) newloc;
@@ -109,6 +112,9 @@ int main(int argc, char* argv[]){
   /*printf("Done upto here \n"); */
   print_fw_vector(*newloc, vec_size, topn); 
 
+  end = clock(); 
+  cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+  printf("Execution time: %f seconds\n", cpu_time_used);
 
 
   return 0;
