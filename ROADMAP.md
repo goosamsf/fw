@@ -11,3 +11,16 @@
     data structure.
     
   - Now sort the data structure so that you can extract the top n value 
+
+
+Next thing to do :
+
+
+
+
+Final Goal :
+Comparison of three methods
+    - c (single threaded)
+    - golang (goroutine)
+    - c's pthread (multithreaded)
+
